@@ -1,6 +1,12 @@
 package main
 
-import "github.com/kataras/iris"
+import (
+	"github.com/kataras/iris"
+	"github.com/kataras/iris/hero"
+	"noteWeb/repositories"
+	"noteWeb/services"
+	"noteWeb/web/controllers"
+)
 
 type Note struct {
 	Info       string
@@ -24,16 +30,20 @@ func main() {
 	})
 
 	app.Use(func(ctx iris.Context) {
+		println("begin request for path : ", ctx.Path())
 		//ctx.Application().Loger().Info("begin request for path : %s", ctx.Path())
 		ctx.Next()
 	})
 
 	app.Done(func(ctx iris.Context) {})
 
-	app.Get("/welcome", welcome)
-	app.Run(iris.Addr(":8080"), iris.WithCharset("UTF-8"))
-}
+	//hero
+	hero.Register(services.NoteService{})
 
-func welcome(ctx iris.Context) {
-	ctx.View("welcome.html")
+	//app.Get("/welcome", welcomeHandler)
+	app.Get("/newNote", hero.Handler(controllers.InsertNewNote))
+
+	//init database
+	repositories.DbInit()
+	app.Run(iris.Addr(":8080"), iris.WithCharset("UTF-8"))
 }

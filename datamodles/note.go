@@ -1,5 +1,9 @@
 package datamodles
 
+import (
+	"strconv"
+)
+
 type Note struct {
 	Id         int
 	Symbol     string

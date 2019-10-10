@@ -1,26 +1,27 @@
 package repositories
 
 import (
-	"database/sql"
 	"errors"
 	_ "github.com/go-sql-driver/mysql"
 	"noteWeb/datamodles"
-	"noteWeb/services/readConf"
-	"strconv"
 )
 
-type NodeRepositories interface {
-	GetNote(symbol string) (datamodles.Note, error)
+type INoteRepositories interface {
+	QuertNote(symbol string) (*datamodles.Note, error)
 	UpdateNote(symbol string, editTime string, content string) error
+	InsertNote(symbol string, content string) error
 }
 
-func (db *sql.DB) GetNote(symbol string) (datamodles.Note, error) {
-	if db == nil {
+type NoteRepositories struct {
+}
+
+func (nodeRep *NoteRepositories) QueryNote(symbol string) (*datamodles.Note, error) {
+	if DB == nil {
 		panic("database do not init")
 	}
 
 	//begin tx
-	tx, err := db.Begin()
+	tx, err := DB.Begin()
 	if err != nil {
 		return nil, err
 	}
@@ -32,31 +33,30 @@ func (db *sql.DB) GetNote(symbol string) (datamodles.Note, error) {
 	}
 	defer stmt.Close()
 
-	row := stmt.QueryRow(symbol)
+	rows := stmt.QueryRow(symbol)
 	var id int
 	var content string
-	var symbol string
 	var createTime string
 	var editTime string
-	err := rows.Scan(&id, &content, &symbol, &createTime, &editTime)
+	err = rows.Scan(&id, &content, &symbol, &createTime, &editTime)
 	if err != nil {
 		tx.Rollback()
 		return nil, err
 	}
 	note := datamodles.Note{Id: id, Content: content, Symbol: symbol, CreateTime: createTime, EditTime: editTime}
 	tx.Commit()
-	return note, nil
+	return &note, nil
 }
 
-func (db *sql.DB) UpdateNote(symbol string, editTime string, content string) (err error) {
-	if db == nil {
+func (nodeRep *NoteRepositories) UpdateNote(symbol string, editTime string, content string) (err error) {
+	if DB == nil {
 		panic("database do not init")
 	}
 
 	//begin tx
-	tx, err := db.Begin()
+	tx, err := DB.Begin()
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	sqlStr := "update note set content = ?, editTime =? where symbol = ?"
@@ -71,8 +71,44 @@ func (db *sql.DB) UpdateNote(symbol string, editTime string, content string) (er
 		tx.Rollback()
 		return err
 	}
+	if result != nil {
+		return errors.New("update note fail :: symbol: " + symbol + " content: " + content)
+	}
+	tx.Commit()
+
+	return nil
+}
+
+func (nodeRep *NoteRepositories) InsertNote(symbol string, content string, createTime string) error {
+	if DB == nil {
+		panic("database do not init")
+	}
+
+	//begin tx
+	tx, err := DB.Begin()
+	if err != nil {
+		return err
+	}
+
+	sqlStr := "insert into note (symbol, content, createTime) values(?, ?, ?)"
+	stmt, err := tx.Prepare(sqlStr)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	result, err := stmt.Exec(symbol, content, createTime)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	if result != nil {
+		return errors.New("insert note fail :: symbol: " + symbol + " content: " + content + " createTime:" + createTime)
+	}
+	tx.Commit()
 
 	tx.Commit()
 
 	return nil
+
 }

@@ -6,11 +6,17 @@ import (
 	"noteWeb/services/readConf"
 )
 
-func DbInit() *sql.DB {
+var DB *sql.DB
+
+func DbInit() {
 	sqlConf := "/root/conf/sqlConf"
 	scMap, err := readConf.ReadConf(sqlConf)
 
-	db, err := sql.Open("mysql", scMap["username"]+":"+scMap["password"]+"@tcp"+"("+scMap["url"]+")"+"/"+scMap["dbname"]+"?"+scMap["ops"])
-	checkErr(err)
-	return db
+	DB, err := sql.Open("mysql", scMap["username"]+":"+scMap["password"]+"@tcp"+"("+scMap["url"]+")"+"/"+scMap["dbname"]+"?"+scMap["ops"])
+	if nil != err {
+		panic("fail init database err")
+	}
+	if DB == nil {
+		panic("fail init database")
+	}
 }
