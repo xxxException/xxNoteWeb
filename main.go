@@ -2,8 +2,9 @@ package main
 
 import (
 	"github.com/kataras/iris"
-	"github.com/kataras/iris/hero"
+	"github.com/kataras/iris/mvc"
 	"noteWeb/repositories"
+	"noteWeb/routes"
 	"noteWeb/services"
 	"noteWeb/web/controllers"
 )
@@ -14,7 +15,7 @@ type Note struct {
 }
 
 func main() {
-	app := iris.New()
+	/*app := iris.New()
 	app.RegisterView(iris.HTML("./web/views", ".html").Reload(true))
 	//app.OnErrorCode(iris.StatusInternalServerError, )
 
@@ -38,12 +39,16 @@ func main() {
 	app.Done(func(ctx iris.Context) {})
 
 	//hero
-	hero.Register(services.NoteService{})
+	//hero.Register(services.NoteService{})
 
-	//app.Get("/welcome", welcomeHandler)
-	app.Get("/newNote", hero.Handler(controllers.InsertNewNote))
+	//mvc
+	//mvc.New(app.Party("note")).Handle(new(controllers.NoteController))
+
+	//route conf
+	//routes.Route(app)
 
 	//init database
 	repositories.DbInit()
-	app.Run(iris.Addr(":8080"), iris.WithCharset("UTF-8"))
+	app.Run(iris.Addr(":80"), iris.WithCharset("UTF-8"))
+	*/
 }
