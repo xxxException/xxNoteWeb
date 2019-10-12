@@ -1,6 +1,7 @@
 package services
 
 import (
+	"database/sql"
 	"noteWeb/repositories"
 	"time"
 )
@@ -11,6 +12,15 @@ type INoteService interface {
 
 type NoteService struct {
 	repositories.NoteRepositories
+}
+
+func (noteSer *NoteService) GetNoteBySymbol(symbol string) {
+	note, err := noteSer.QueryNote(symbol)
+	if err == sql.ErrNoRows {
+		return nil, err
+	}
+
+	return note, nil
 }
 
 func (noteSer *NoteService) InsertNote(symbol string, content string) error {

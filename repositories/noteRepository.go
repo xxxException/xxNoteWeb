@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"database/sql"
 	"errors"
 	_ "github.com/go-sql-driver/mysql"
 	"noteWeb/datamodles"
@@ -13,15 +14,16 @@ type INoteRepositories interface {
 }
 
 type NoteRepositories struct {
+	DB *sql.DB
 }
 
-func (nodeRep *NoteRepositories) QueryNote(symbol string) (*datamodles.Note, error) {
-	if DB == nil {
+func (noteRep *NoteRepositories) QueryNote(symbol string) (*datamodles.Note, error) {
+	if noteRep.DB == nil {
 		panic("database do not init")
 	}
 
 	//begin tx
-	tx, err := DB.Begin()
+	tx, err := noteRep.DB.Begin()
 	if err != nil {
 		return nil, err
 	}
@@ -39,7 +41,7 @@ func (nodeRep *NoteRepositories) QueryNote(symbol string) (*datamodles.Note, err
 	var createTime string
 	var editTime string
 	err = rows.Scan(&id, &content, &symbol, &createTime, &editTime)
-	if err != nil {
+	if err != nil { //sql.ErrNoRows
 		tx.Rollback()
 		return nil, err
 	}
@@ -48,13 +50,13 @@ func (nodeRep *NoteRepositories) QueryNote(symbol string) (*datamodles.Note, err
 	return &note, nil
 }
 
-func (nodeRep *NoteRepositories) UpdateNote(symbol string, editTime string, content string) (err error) {
-	if DB == nil {
+func (noteRep *NoteRepositories) UpdateNote(symbol string, editTime string, content string) (err error) {
+	if noteRep.DB == nil {
 		panic("database do not init")
 	}
 
 	//begin tx
-	tx, err := DB.Begin()
+	tx, err := noteRep.DB.Begin()
 	if err != nil {
 		return err
 	}
@@ -79,13 +81,13 @@ func (nodeRep *NoteRepositories) UpdateNote(symbol string, editTime string, cont
 	return nil
 }
 
-func (nodeRep *NoteRepositories) InsertNote(symbol string, content string, createTime string) error {
-	if DB == nil {
+func (noteRep *NoteRepositories) InsertNote(symbol string, content string, createTime string) error {
+	if noteRep.DB == nil {
 		panic("database do not init")
 	}
 
 	//begin tx
-	tx, err := DB.Begin()
+	tx, err := noteRep.DB.Begin()
 	if err != nil {
 		return err
 	}
