@@ -3,20 +3,24 @@ package repositories
 import (
 	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
-	"noteWeb/services/readConf"
+	"xxNoteWeb/services/readConf"
 )
 
-var DB *sql.DB
+var db *sql.DB
 
 func DbInit() {
 	sqlConf := "/root/conf/sqlConf"
 	scMap, err := readConf.ReadConf(sqlConf)
 
-	DB, err := sql.Open("mysql", scMap["username"]+":"+scMap["password"]+"@tcp"+"("+scMap["url"]+")"+"/"+scMap["dbname"]+"?"+scMap["ops"])
+	db, err := sql.Open("mysql", scMap["username"]+":"+scMap["password"]+"@tcp"+"("+scMap["url"]+")"+"/"+scMap["dbname"]+"?"+scMap["ops"])
 	if nil != err {
 		panic("fail init database err")
 	}
-	if DB == nil {
+	if db == nil {
 		panic("fail init database")
 	}
+}
+
+func getDB() *sql.DB {
+	return db
 }

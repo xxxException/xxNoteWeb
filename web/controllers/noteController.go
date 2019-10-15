@@ -3,7 +3,7 @@ package controllers
 import (
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/hero"
-	"noteWeb/services"
+	"xxNoteWeb/services"
 )
 
 func New(ctx iris.Context, symbol string) {

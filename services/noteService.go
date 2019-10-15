@@ -2,8 +2,8 @@ package services
 
 import (
 	"database/sql"
-	"noteWeb/repositories"
 	"time"
+	"xxNoteWeb/repositories"
 )
 
 type INoteService interface {
@@ -11,7 +11,13 @@ type INoteService interface {
 }
 
 type NoteService struct {
-	repositories.NoteRepositories
+	rep repositories.NoteRepositories
+}
+
+func NewNoteService() *NoteService {
+	return &NoteService{
+		rep: repositories.NewNoteRepository(),
+	}
 }
 
 func (noteSer *NoteService) GetNoteBySymbol(symbol string) {

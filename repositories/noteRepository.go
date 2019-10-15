@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	_ "github.com/go-sql-driver/mysql"
-	"noteWeb/datamodles"
+	"xxNoteWeb/datamodles"
 )
 
 type INoteRepositories interface {
@@ -13,11 +13,18 @@ type INoteRepositories interface {
 	InsertNote(symbol string, content string) error
 }
 
-type NoteRepositories struct {
+type NoteRepository struct {
 	DB *sql.DB
 }
 
-func (noteRep *NoteRepositories) QueryNote(symbol string) (*datamodles.Note, error) {
+//config
+func NewNoteRepository() *NoteReopsitory {
+	return &NoteRepository{
+		DB: getDB(),
+	}
+}
+
+func (noteRep *NoteRepository) QueryNote(symbol string) (*datamodles.Note, error) {
 	if noteRep.DB == nil {
 		panic("database do not init")
 	}
@@ -50,7 +57,7 @@ func (noteRep *NoteRepositories) QueryNote(symbol string) (*datamodles.Note, err
 	return &note, nil
 }
 
-func (noteRep *NoteRepositories) UpdateNote(symbol string, editTime string, content string) (err error) {
+func (noteRep *NoteRepository) UpdateNote(symbol string, editTime string, content string) (err error) {
 	if noteRep.DB == nil {
 		panic("database do not init")
 	}
@@ -81,7 +88,7 @@ func (noteRep *NoteRepositories) UpdateNote(symbol string, editTime string, cont
 	return nil
 }
 
-func (noteRep *NoteRepositories) InsertNote(symbol string, content string, createTime string) error {
+func (noteRep *NoteRepository) InsertNote(symbol string, content string, createTime string) error {
 	if noteRep.DB == nil {
 		panic("database do not init")
 	}
