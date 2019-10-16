@@ -3,11 +3,11 @@ package main
 import (
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
-	"xxNoteWeb/bootstrap"
+	"xxNoteWeb/bootstrapper"
 	"xxNoteWeb/repositories"
-	"xxNoteWeb/routes"
 	"xxNoteWeb/services"
 	"xxNoteWeb/web/controllers"
+	"xxNoteWeb/web/routes"
 )
 
 func NewApp() *bootstrapper.Bootstrapper {

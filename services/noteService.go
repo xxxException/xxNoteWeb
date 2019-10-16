@@ -11,7 +11,7 @@ type INoteService interface {
 }
 
 type NoteService struct {
-	rep repositories.NoteRepositories
+	rep *repositories.NoteRepository
 }
 
 func NewNoteService() *NoteService {

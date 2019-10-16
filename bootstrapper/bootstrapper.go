@@ -1,6 +1,8 @@
 package bootstrapper
 
 import (
+	//"time"
+
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/middleware/logger"
 	"github.com/kataras/iris/middleware/recover"
@@ -20,15 +22,15 @@ func New(appName string, appOwner string) *Bootstrapper {
 		AppName:     appName,
 		AppOwner:    appOwner,
 	}
-
+	return b
 }
 
 func (this *Bootstrapper) Bootstrap(configList ...Configurator) *Bootstrapper {
-	this.SetupErrorHandler()
+	//this.SetupErrorHandler()
 	this.Favicon("../favicon.ico")
 	//this.StaticWeb(StaticAssets[1:len(StaticAssets)-1], StaticAssets)
 
-	this.setupCron()
+	//this.setupCron()
 	this.Use(recover.New())
 	this.Use(logger.New())
 	return this
@@ -36,7 +38,7 @@ func (this *Bootstrapper) Bootstrap(configList ...Configurator) *Bootstrapper {
 
 func (this *Bootstrapper) Configure(configList ...Configurator) *Bootstrapper {
 	for _, config := range configList {
-		config(b)
+		config(this)
 	}
 
 	return this
@@ -49,15 +51,17 @@ func (this *Bootstrapper) SetupViews(viewDir string) {
 	// production 环境设置 false
 	htmlEngine.Reload(true)
 
-	htmlEngine.AddFunc("FromUnixTimeShort", func(t int) string {
-		dt := time.Unix(int64(t), int64(0))
-		return dt.Format(conf.SysTimeFormShort)
-	})
+	/*
+		htmlEngine.AddFunc("FromUnixTimeShort", func(t int) string {
+			dt := time.Unix(int64(t), int64(0))
+			return dt.Format(conf.SysTimeFormShort)
+		})
 
-	htmlEngine.AddFunc("FromUnixTime", func(t int) string {
-		dt := time.Unix(int64(t), int64(0))
-		return dt.Format(conf.SysTimeForm)
-	})
+		htmlEngine.AddFunc("FromUnixTime", func(t int) string {
+			dt := time.Unix(int64(t), int64(0))
+			return dt.Format(conf.SysTimeForm)
+		})
+	*/
 
 	this.RegisterView(htmlEngine)
 }

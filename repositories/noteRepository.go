@@ -18,7 +18,7 @@ type NoteRepository struct {
 }
 
 //config
-func NewNoteRepository() *NoteReopsitory {
+func NewNoteRepository() *NoteRepository {
 	return &NoteRepository{
 		DB: getDB(),
 	}
