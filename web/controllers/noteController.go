@@ -16,7 +16,7 @@ var indexView = mvc.View{
 	Name: "../views/index.html",
 }
 
-func (this *NoteController) Get() {
+func (this *NoteController) Get() hero.Result {
 	return indexView
 }
 

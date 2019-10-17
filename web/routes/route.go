@@ -1,10 +1,9 @@
 package routes
 
 import (
-	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
 	"xxNoteWeb/bootstrapper"
-	"xxNoteWeb/web/controllers"
+	"xxNoteWeb/services"
 )
 
 func Configure(b *bootstrapper.Bootstrapper) {
