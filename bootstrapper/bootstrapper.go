@@ -6,6 +6,7 @@ import (
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/middleware/logger"
 	"github.com/kataras/iris/middleware/recover"
+	"log"
 )
 
 type Configurator func(*Bootstrapper)
@@ -27,7 +28,7 @@ func New(appName string, appOwner string) *Bootstrapper {
 
 func (this *Bootstrapper) Bootstrap(configList ...Configurator) *Bootstrapper {
 	//this.SetupErrorHandler()
-	this.Favicon("../favicon.ico")
+	this.Favicon("./web/static/favicon.ico")
 	//this.StaticWeb(StaticAssets[1:len(StaticAssets)-1], StaticAssets)
 
 	//this.setupCron()
@@ -45,8 +46,8 @@ func (this *Bootstrapper) Configure(configList ...Configurator) *Bootstrapper {
 }
 
 func (this *Bootstrapper) SetupViews(viewDir string) {
-	htmlEngine := iris.HTML(viewDir, ".html").Layout("shared/layout.html")
-	//htmlEngine := iris.HTML(viewDir, ".html")
+	//htmlEngine := iris.HTML(viewDir, ".html").Layout("shared/layout.html")
+	htmlEngine := iris.HTML(viewDir, ".html")
 
 	// production 环境设置 false
 	htmlEngine.Reload(true)
@@ -64,4 +65,11 @@ func (this *Bootstrapper) SetupViews(viewDir string) {
 	*/
 
 	this.RegisterView(htmlEngine)
+}
+
+func (this *Bootstrapper) Listen(addr string) {
+	err := this.Run(iris.Addr(addr))
+	if err != nil {
+		log.Fatal("bootstrap.Listen error ", err)
+	}
 }

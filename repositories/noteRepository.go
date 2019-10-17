@@ -24,13 +24,33 @@ func NewNoteRepository() *NoteRepository {
 	}
 }
 
-func (noteRep *NoteRepository) QueryNote(symbol string) (*datamodles.Note, error) {
-	if noteRep.DB == nil {
-		panic("database do not init")
+func (noteRep *NoteRepository) CountNote(symbol string) (int, error) {
+	tx, err := TxBegin(noteRep.DB)
+	if err != nil {
+		return -1, err
 	}
 
-	//begin tx
-	tx, err := noteRep.DB.Begin()
+	sqlStr := "select count(symbol) from note where symbol = ?"
+	stmt, err := tx.Prepare(sqlStr)
+	if err != nil {
+		return -1, err
+	}
+	defer stmt.Close()
+
+	rows := stmt.QueryRow(symbol)
+	var count int
+	err = rows.Scan(&count)
+	if err != nil { //sql.ErrNoRows
+		tx.Rollback()
+		return -1, err
+	}
+
+	tx.Commit()
+	return count, nil
+}
+
+func (noteRep *NoteRepository) QueryNote(symbol string) (*datamodles.Note, error) {
+	tx, err := TxBegin(noteRep.DB)
 	if err != nil {
 		return nil, err
 	}
@@ -57,13 +77,8 @@ func (noteRep *NoteRepository) QueryNote(symbol string) (*datamodles.Note, error
 	return &note, nil
 }
 
-func (noteRep *NoteRepository) UpdateNote(symbol string, editTime string, content string) (err error) {
-	if noteRep.DB == nil {
-		panic("database do not init")
-	}
-
-	//begin tx
-	tx, err := noteRep.DB.Begin()
+func (noteRep *NoteRepository) UpdateNote(symbol string, content string, editTime string) (err error) {
+	tx, err := TxBegin(noteRep.DB)
 	if err != nil {
 		return err
 	}
@@ -88,31 +103,26 @@ func (noteRep *NoteRepository) UpdateNote(symbol string, editTime string, conten
 	return nil
 }
 
-func (noteRep *NoteRepository) InsertNote(symbol string, content string, createTime string) error {
-	if noteRep.DB == nil {
-		panic("database do not init")
-	}
-
-	//begin tx
-	tx, err := noteRep.DB.Begin()
+func (noteRep *NoteRepository) InsertNote(symbol string, createTime string) error {
+	tx, err := TxBegin(noteRep.DB)
 	if err != nil {
 		return err
 	}
 
-	sqlStr := "insert into note (symbol, content, createTime) values(?, ?, ?)"
+	sqlStr := "insert into note (symbol, createTime) values(?, ?)"
 	stmt, err := tx.Prepare(sqlStr)
 	if err != nil {
 		return err
 	}
 	defer stmt.Close()
 
-	result, err := stmt.Exec(symbol, content, createTime)
+	result, err := stmt.Exec(symbol, createTime)
 	if err != nil {
 		tx.Rollback()
 		return err
 	}
 	if result != nil {
-		return errors.New("insert note fail :: symbol: " + symbol + " content: " + content + " createTime:" + createTime)
+		return errors.New("insert note fail :: symbol: " + symbol + " createTime:" + createTime)
 	}
 	tx.Commit()
 

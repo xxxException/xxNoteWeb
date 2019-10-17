@@ -3,6 +3,8 @@ package services
 import (
 	"database/sql"
 	"time"
+	"xxNoteWeb/datamodles"
+	"xxNoteWeb/errorDefine"
 	"xxNoteWeb/repositories"
 )
 
@@ -20,22 +22,49 @@ func NewNoteService() *NoteService {
 	}
 }
 
-func (noteSer *NoteService) GetNoteBySymbol(symbol string) {
-	note, err := noteSer.QueryNote(symbol)
-	if err == sql.ErrNoRows {
-		return nil, err
+func (noteSer *NoteService) GetNoteBySymbol(symbol string) (*datamodles.Note, error) {
+	note, err := noteSer.rep.QueryNote(symbol)
+	if err != sql.ErrNoRows {
+		return nil, errorDefine.NoSymbolNoteErr
 	}
 
-	return note, nil
+	return note, err
 }
 
-func (noteSer *NoteService) InsertNote(symbol string, content string) error {
-	time := time.Now().Local().String()
-	time = time[:19]
+func (noteSer *NoteService) NewNote(symbol string) error {
+	time := getTime()
 
-	err := noteSer.InsertNote(symbol, content)
+	err := noteSer.rep.InsertNote(symbol, time)
 	if err != nil {
-		return err
+		return errorDefine.InsertNoteErr
 	}
 	return nil
+}
+
+func (noteSer *NoteService) UpdateNote(symbol string, content string) error {
+	time := getTime()
+
+	err := noteSer.rep.UpdateNote(symbol, content, time)
+	if err != nil {
+		return errorDefine.UpdateNoteErr
+	}
+	return nil
+}
+
+func (noteSer *NoteService) IsExistNote(symbol string) (bool, error) {
+	count, err := noteSer.rep.CountNote(symbol)
+	if err != nil {
+		return false, err
+	}
+
+	if count > 0 {
+		return true, err
+	}
+	return false, err
+}
+
+func getTime() string {
+	time := time.Now().Local().String()
+	time = time[:19]
+	return time
 }
