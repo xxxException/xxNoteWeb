@@ -32,8 +32,9 @@ func (this *Bootstrapper) Bootstrap(configList ...Configurator) *Bootstrapper {
 	//this.StaticWeb(StaticAssets[1:len(StaticAssets)-1], StaticAssets)
 
 	//this.setupCron()
-	this.Use(recover.New())
-	this.Use(logger.New())
+	//用UseGlobal代替Use
+	this.UseGlobal(recover.New())
+	this.UseGlobal(logger.New())
 	return this
 }
 

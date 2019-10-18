@@ -3,21 +3,25 @@ package repositories
 import (
 	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
-	"xxNoteWeb/readConf"
+	"log"
+	//"xxNoteWeb/readConf"
 )
 
 var db *sql.DB
 
 func DbInit() {
-	sqlConf := "web/static/"
-	scMap, err := readConf.ReadConf(sqlConf)
-
-	db, err := sql.Open("mysql", scMap["username"]+":"+scMap["password"]+"@tcp"+"("+scMap["url"]+")"+"/"+scMap["dbname"]+"?"+scMap["ops"])
+	//sqlConf := "web/static"
+	//scMap, err := readConf.ReadConf(sqlConf)
+	//if nil != err {
+	//	log.Fatal("read config fail ", err)
+	//}
+	var err error
+	db, err = sql.Open("mysql", "root"+":"+"199762"+"@tcp"+"("+"localhost:3306"+")"+"/"+"xxNoteWeb"+"?"+"useSSL=false&serverTimezone=GMT%2B8")
 	if nil != err {
-		panic("fail init database errorDefine")
+		log.Fatal("fail init database errorDefine", err)
 	}
 	if db == nil {
-		panic("fail init database")
+		log.Fatal("fail init database", err)
 	}
 }
 
@@ -35,5 +39,8 @@ func TxBegin(theDb *sql.DB) (*sql.Tx, error) {
 }
 
 func getDB() *sql.DB {
+	if db == nil {
+		log.Fatal("db is nil")
+	}
 	return db
 }

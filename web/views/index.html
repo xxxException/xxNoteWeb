@@ -3,7 +3,12 @@
     <title></title>
 </head>
 <body>
-    <form action="/note/openNote">
+    <form action="/note/opennote" method="post">
+        <input name="symbol">
+        <input type="submit" value="提交">
+    </form>
+
+    <form action="/note/query" method="get">
         <input name="symbol">
         <input type="submit" value="提交">
     </form>

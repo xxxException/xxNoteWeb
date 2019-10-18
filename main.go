@@ -7,6 +7,7 @@ import (
 )
 
 func NewApp() *bootstrapper.Bootstrapper {
+	repositories.DbInit()
 	app := bootstrapper.New("xxNoteWeb", "xzw")
 
 	// route config , controller etc ..
@@ -16,7 +17,6 @@ func NewApp() *bootstrapper.Bootstrapper {
 	//view
 	app.SetupViews("web/views")
 
-	repositories.DbInit()
 	return app
 }
 

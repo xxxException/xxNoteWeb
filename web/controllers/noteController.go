@@ -4,7 +4,7 @@ import (
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/hero"
 	"github.com/kataras/iris/mvc"
-	"log"
+	"github.com/kataras/iris/sessions"
 	"xxNoteWeb/services"
 )
 
@@ -15,6 +15,7 @@ todo:给note加锁，在有人打开的情况下，只能读，不能写
 type NoteController struct {
 	Ctx     iris.Context
 	Service services.NoteService
+	Session sessions.Session
 }
 
 var indexView = mvc.View{
@@ -22,10 +23,12 @@ var indexView = mvc.View{
 }
 
 func (this *NoteController) Get() hero.Result {
+	println("/note")
 	return indexView
 }
 
-func (this *NoteController) PostOpenNote() {
+func (this *NoteController) PostOpennote() {
+	println("open note")
 	var symbol = this.Ctx.FormValue("symbol")
 	isExist, err := this.Service.IsExistNote(symbol)
 	if err != nil {
@@ -45,9 +48,6 @@ func (this *NoteController) PostOpenNote() {
 		return
 	}
 
-	err = this.Service.NewNote(symbol)
-	log.Fatal(err)
-
 }
 
 func (this *NoteController) PostDelete(symbol string) {
@@ -62,9 +62,11 @@ func (this *NoteController) PostEdit(symbol string, content string) {
 
 }
 
-func (this *NoteController) GetQuery(symbol string) mvc.Result {
+func (this *NoteController) GetQuery() mvc.Result {
+	symbol := this.Ctx.URLParam("symbol")
+	println(symbol)
 	//query
 	//if nil insert
 	//else display
-	return nil
+	return indexView
 }

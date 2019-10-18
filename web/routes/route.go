@@ -1,7 +1,6 @@
 package routes
 
 import (
-	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
 	"xxNoteWeb/bootstrapper"
 	"xxNoteWeb/services"
@@ -19,10 +18,10 @@ func Configure(b *bootstrapper.Bootstrapper) {
 
 	note := index.Party("/note")
 	note.Handle(new(controllers.NoteController))
-	println("route")
-	note.Router.Done(func(ctx iris.Context) {
-		print("into\n")
-		ctx.Next()
-	})
+
+	//b.Use(func(ctx iris.Context) {
+	//	print(ctx.Request().URL.String())
+	//	ctx.Next()
+	//})
 
 }
