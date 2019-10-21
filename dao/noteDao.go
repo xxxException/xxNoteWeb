@@ -25,7 +25,6 @@ func NewNoteRepository() *NoteRepository {
 	}
 }
 
-//todo: dao层 2019.10.21晚任务
 func (noteRep *NoteRepository) ExistNote(symbol string) (bool, error) {
 	//看不懂，，
 	//var re, err = noteRep.EngineGroup.Exist(&RecordExist{
