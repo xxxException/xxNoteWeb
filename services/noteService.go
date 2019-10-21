@@ -3,9 +3,9 @@ package services
 import (
 	"database/sql"
 	"time"
+	"xxNoteWeb/dao"
 	"xxNoteWeb/datamodles"
 	"xxNoteWeb/errorDefine"
-	"xxNoteWeb/repositories"
 )
 
 type INoteService interface {
@@ -13,12 +13,12 @@ type INoteService interface {
 }
 
 type NoteService struct {
-	rep *repositories.NoteRepository
+	rep *dao.NoteRepository
 }
 
 func NewNoteService() *NoteService {
 	return &NoteService{
-		rep: repositories.NewNoteRepository(),
+		rep: dao.NewNoteRepository(),
 	}
 }
 
