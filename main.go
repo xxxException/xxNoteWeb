@@ -8,7 +8,7 @@ import (
 )
 
 func NewApp() *bootstrapper.Bootstrapper {
-	dataSource.NewMysqlEngine()
+	dataSource.NewMysqlEngineGroup()
 	dao.DbInit()
 	app := bootstrapper.New("xxNoteWeb", "xzw")
 

@@ -52,15 +52,12 @@ func (noteSer *NoteService) UpdateNote(symbol string, content string) error {
 }
 
 func (noteSer *NoteService) IsExistNote(symbol string) (bool, error) {
-	count, err := noteSer.rep.CountNote(symbol)
+	has, err := noteSer.rep.ExistNote(symbol)
 	if err != nil {
 		return false, err
 	}
 
-	if count > 0 {
-		return true, err
-	}
-	return false, err
+	return has, err
 }
 
 func getTime() string {
