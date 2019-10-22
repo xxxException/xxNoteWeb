@@ -8,36 +8,36 @@ import (
 	"xxNoteWeb/errorDefine"
 )
 
-type INoteRepositories interface {
+type InoteDaoositories interface {
 	QueryNote(symbol string) (*datamodles.Note, error)
 	UpdateNote(symbol string, editTime string, content string) error
 	InsertNote(symbol string, content string) error
 }
 
-type NoteRepository struct {
+type NoteDao struct {
 	EngineGroup *xorm.EngineGroup
 }
 
 //config
-func NewNoteRepository() *NoteRepository {
-	return &NoteRepository{
-		EngineGroup: dataSource.NewMysqlEngineGroup(),
+func NewNoteDao() *NoteDao {
+	return &NoteDao{
+		EngineGroup: dataSource.GetEngineGroup(),
 	}
 }
 
-func (noteRep *NoteRepository) ExistNote(symbol string) (bool, error) {
+func (noteDao *NoteDao) ExistNote(symbol string) (bool, error) {
 	//看不懂，，
-	//var re, err = noteRep.EngineGroup.Exist(&RecordExist{
+	//var re, err = noteDao.EngineGroup.Exist(&RecordExist{
 	//	Name: "test1",
 	//})
-	has, err := noteRep.EngineGroup.SQL("select symbol from note where symbol = ?", symbol).Exist()
+	has, err := noteDao.EngineGroup.SQL("select * from note where symbol = ?", symbol).Exist()
 	return has, err
 }
 
-func (noteRep *NoteRepository) QueryNote(symbol string) (*datamodles.Note, error) {
+func (noteDao *NoteDao) QueryNote(symbol string) (*datamodles.Note, error) {
 	var note *datamodles.Note
 
-	has, err := noteRep.EngineGroup.Where("symbol = ?", symbol).Get(&note)
+	has, err := noteDao.EngineGroup.Where("symbol = ?", symbol).Get(&note)
 	if err != nil {
 		return nil, err
 	}
@@ -49,8 +49,8 @@ func (noteRep *NoteRepository) QueryNote(symbol string) (*datamodles.Note, error
 	return note, err
 }
 
-func (noteRep *NoteRepository) UpdateNote(symbol string, content string, editTime string) (err error) {
-	re, err := noteRep.EngineGroup.Exec("update note set content = ?, editTime =? where symbol = ? ",
+func (noteDao *NoteDao) UpdateNote(symbol string, content string, editTime string) (err error) {
+	re, err := noteDao.EngineGroup.Exec("update note set content = ?, editTime =? where symbol = ? ",
 		content, editTime, symbol)
 	if err != nil {
 		return err
@@ -65,8 +65,16 @@ func (noteRep *NoteRepository) UpdateNote(symbol string, content string, editTim
 	return nil
 }
 
-func (noteRep *NoteRepository) InsertNote(symbol string, createTime string) error {
+func (noteDao *NoteDao) InsertNote(symbol string, createTime string) error {
 	var note = &datamodles.Note{Symbol: symbol, CreateTime: createTime}
-	_, err := noteRep.EngineGroup.Insert(note)
+	_, err := noteDao.EngineGroup.Insert(note)
+	return err
+}
+
+func (noteDao *NoteDao) DeleteNode(symbol string) error {
+	_, err := noteDao.EngineGroup.Exec("delete from note where symbol = ? ", symbol)
+	if err != nil {
+		return err
+	}
 	return err
 }

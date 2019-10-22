@@ -2,14 +2,19 @@ package main
 
 import (
 	"xxNoteWeb/bootstrapper"
-	"xxNoteWeb/dao"
 	"xxNoteWeb/dataSource"
+	"xxNoteWeb/web/middleware/logger"
 	"xxNoteWeb/web/routes"
 )
 
 func NewApp() *bootstrapper.Bootstrapper {
+	//mysql
 	dataSource.NewMysqlEngineGroup()
-	dao.DbInit()
+	dataSource.GetEngineGroup().Ping()
+
+	//logger
+	logger.NewLogger()
+
 	app := bootstrapper.New("xxNoteWeb", "xzw")
 
 	// route config , controller etc ..

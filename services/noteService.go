@@ -2,6 +2,7 @@ package services
 
 import (
 	"database/sql"
+	"errors"
 	"time"
 	"xxNoteWeb/dao"
 	"xxNoteWeb/datamodles"
@@ -13,17 +14,19 @@ type INoteService interface {
 }
 
 type NoteService struct {
-	rep *dao.NoteRepository
+	dao *dao.NoteDao
+	a   int
 }
 
 func NewNoteService() *NoteService {
 	return &NoteService{
-		rep: dao.NewNoteRepository(),
+		dao: dao.NewNoteDao(),
+		a:   2,
 	}
 }
 
 func (noteSer *NoteService) GetNoteBySymbol(symbol string) (*datamodles.Note, error) {
-	note, err := noteSer.rep.QueryNote(symbol)
+	note, err := noteSer.dao.QueryNote(symbol)
 	if err != sql.ErrNoRows {
 		return nil, errorDefine.NoSymbolNoteErr
 	}
@@ -34,7 +37,7 @@ func (noteSer *NoteService) GetNoteBySymbol(symbol string) (*datamodles.Note, er
 func (noteSer *NoteService) NewNote(symbol string) error {
 	time := getTime()
 
-	err := noteSer.rep.InsertNote(symbol, time)
+	err := noteSer.dao.InsertNote(symbol, time)
 	if err != nil {
 		return errorDefine.InsertNoteErr
 	}
@@ -44,7 +47,7 @@ func (noteSer *NoteService) NewNote(symbol string) error {
 func (noteSer *NoteService) UpdateNote(symbol string, content string) error {
 	time := getTime()
 
-	err := noteSer.rep.UpdateNote(symbol, content, time)
+	err := noteSer.dao.UpdateNote(symbol, content, time)
 	if err != nil {
 		return errorDefine.UpdateNoteErr
 	}
@@ -52,12 +55,20 @@ func (noteSer *NoteService) UpdateNote(symbol string, content string) error {
 }
 
 func (noteSer *NoteService) IsExistNote(symbol string) (bool, error) {
-	has, err := noteSer.rep.ExistNote(symbol)
+	has, err := noteSer.dao.ExistNote(symbol)
 	if err != nil {
 		return false, err
 	}
 
 	return has, err
+}
+
+func (noteSer *NoteService) DeleteNote(symbol string) error {
+	err := noteSer.dao.DeleteNode(symbol)
+	if err != nil {
+		return errors.New("delete note fail : " + err.Error())
+	}
+	return nil
 }
 
 func getTime() string {

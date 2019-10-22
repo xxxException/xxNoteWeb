@@ -10,7 +10,7 @@ var EngineGroup *xorm.EngineGroup
 
 func NewMysqlEngineGroup() *xorm.EngineGroup {
 	var driverName = "mysql"
-	var dataSourceName = "root:199762@tcp(127.0.0.1:199762)/xxNoteWeb?useSSL=false&serverTimezone=GMT%2B8"
+	var dataSourceName = "root:199762@tcp(127.0.0.1:3306)/xxnoteweb"
 	//one
 	//engine, err := xorm.NewEngine(driverName, dataSourceName)
 	//if err != nil {
@@ -19,9 +19,14 @@ func NewMysqlEngineGroup() *xorm.EngineGroup {
 
 	//dataSourceNameSlice的数量，决定了EngineGroup内engine的数量
 	var dataSourceNameSlice = []string{dataSourceName, dataSourceName, dataSourceName, dataSourceName, dataSourceName}
-	EngineGroup, err := xorm.NewEngineGroup(driverName, dataSourceNameSlice)
+	var err error
+	EngineGroup, err = xorm.NewEngineGroup(driverName, dataSourceNameSlice)
 	if err != nil {
 		log.Fatal("xorm engine init fail: driver :", driverName, " dataSourceName : ", dataSourceName)
 	}
+	return EngineGroup
+}
+
+func GetEngineGroup() *xorm.EngineGroup {
 	return EngineGroup
 }

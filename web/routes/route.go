@@ -13,10 +13,10 @@ func Configure(b *bootstrapper.Bootstrapper) {
 
 	index := mvc.New(b.Party("/"))
 
-	//注册service
-	index.Register(noteService)
-
 	note := index.Party("/note")
+	//注册service
+	//注册的类型要与controller中的service字段类型一致
+	note.Register(noteService)
 	note.Handle(new(controllers.NoteController))
 
 	//b.Use(func(ctx iris.Context) {

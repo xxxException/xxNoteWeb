@@ -8,8 +8,8 @@ type Note struct {
 	Id         int
 	Symbol     string
 	Content    string
-	CreateTime string
-	EditTime   string
+	CreateTime string `xorm:"DATETIME 'create_time'"`
+	EditTime   string `xorm:"DATETIME 'edit_time'"`
 }
 
 func (note *Note) String() string {
